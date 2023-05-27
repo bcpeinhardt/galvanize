@@ -1,5 +1,2 @@
-import gleam/io
+//// This will probably only ever have module docs
 
-pub fn main() {
-  io.println("Hello from galvanize!")
-}
