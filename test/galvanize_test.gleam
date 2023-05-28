@@ -1,19 +1,21 @@
-import galvanize/test_suite.{add_test, run, test_suite}
-import galvanize/test.{name}
-import galvanize/expecter.{expect, to_be}
+import galvanize.{add, run_seq, test, test_suite}
+import galvanize/should
 
 pub fn main() {
-  // You have to register tests yourself :/
   test_suite("Arithmetic")
-  |> add_test(addition(1))
-  |> run()
-  // But you get to specify execution order
-}
-
-/// Write tests as functions.
-/// Context can be passed as parameters
-pub fn addition(one: Int) {
-  use <- name("One Plus One")
-  expect(one + 1)
-  |> to_be(2)
+  |> add({
+    use <- test("One plus One")
+    1 + 1
+    |> should.equal(2)
+  })
+  |> add({
+    use <- test("Two minus one")
+    2 - 1
+    |> should.equal(1)
+  })
+  |> add({
+    use <- test("Should panic")
+    panic
+  })
+  |> run_seq
 }
