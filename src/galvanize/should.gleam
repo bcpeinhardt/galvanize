@@ -85,7 +85,7 @@ pub fn differ(value: a, from other: a) -> Assertion {
     False ->
       assertion.fail_with_reason(assertion.AssertionFailed(
         string.inspect(value),
-        "should not equal",
+        "should differ from",
         string.inspect(other),
       ))
   }
