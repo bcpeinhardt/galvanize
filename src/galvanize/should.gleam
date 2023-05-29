@@ -9,7 +9,7 @@
 ////
 //// This module exposes some basic functions used to make assertions
 //// and combine them.
-//// 
+////
 
 import gleam/int
 import gleam/string
@@ -254,18 +254,18 @@ fn compare(
 ///
 /// ```gleam
 /// > 1 |> pass_all([
-/// >   be_equal(to: 1),
-/// >   differ(from: 2),
-/// >   be_greater(than: 0),
+/// >   be_equal(_, to: 1),
+/// >   differ(_, from: 2),
+/// >   be_greater(_, than: 0),
 /// > ])
 /// // This assertion passes.
 /// ```
 ///
 /// ```gleam
 /// > 1 |> pass_all([
-/// >   be_equal(to: 1),
-/// >   differ(from: 1),
-/// >   be_greater(than: 0),
+/// >   be_equal(_, to: 1),
+/// >   differ(_, from: 1),
+/// >   be_greater(_, than: 0),
 /// > ])
 /// // This assertion fails since `differ(1, from: 1)` fails.
 /// ```
@@ -291,16 +291,16 @@ pub fn pass_all(subject: a, assertions: List(fn(a) -> Assertion)) -> Assertion {
 ///
 /// ```gleam
 /// > 1 |> pass_any([
-/// >   be_equal(to: 1),
-/// >   differ(from: 1),
+/// >   be_equal(_, to: 1),
+/// >   differ(_, from: 1),
 /// > ])
 /// // This assertion passes because `1 |> be_equal(to: 1)` passes.
 /// ```
 ///
 /// ```gleam
 /// > 1 |> pass_any([
-/// >   differ(from: 1),
-/// >   be_greater(than: 0),
+/// >   differ(_, from: 1),
+/// >   be_greater(_, than: 0),
 /// > ])
 /// // This assertion fails since all the assertions fail.
 /// ```
