@@ -125,3 +125,59 @@ pub fn should_be_greater_or_equal_test() {
   |> should.be_greater_or_equal(to: 2)
   |> should_fail
 }
+
+pub fn should_pass_all_test() {
+  1
+  |> should.pass_all([])
+  |> should_pass
+
+  1
+  |> should.pass_all([should.be_equal(_, to: 1)])
+  |> should_pass
+
+  1
+  |> should.pass_all([should.differ(_, from: 1)])
+  |> should_fail
+
+  1
+  |> should.pass_all([
+    should.be_equal(_, to: 1),
+    should.be_greater(_, than: 0),
+    should.be_lower_or_equal(_, to: 1),
+  ])
+  |> should_pass
+
+  1
+  |> should.pass_all([
+    should.be_equal(_, to: 1),
+    should.differ(_, from: 1),
+    fn(_) { panic },
+  ])
+  |> should_fail
+}
+
+pub fn should_pass_any_test() {
+  1
+  |> should.pass_any([])
+  |> should_pass
+
+  1
+  |> should.pass_any([should.be_equal(_, to: 1)])
+  |> should_pass
+
+  1
+  |> should.pass_any([should.differ(_, from: 1)])
+  |> should_fail
+
+  1
+  |> should.pass_any([
+    should.differ(_, from: 1),
+    should.be_equal(_, to: 1),
+    fn(_) { panic },
+  ])
+  |> should_pass
+
+  1
+  |> should.pass_any([should.differ(_, from: 1), should.be_greater(_, than: 2)])
+  |> should_fail
+}

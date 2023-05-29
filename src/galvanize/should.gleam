@@ -11,9 +11,9 @@
 //// and combine them.
 //// 
 
-import galvanize/assertion.{Assertion}
-import gleam/string
 import gleam/int
+import gleam/string
+import galvanize/assertion.{Assertion}
 
 /// An assertion that passes if the arguments are equal.
 ///
@@ -243,5 +243,78 @@ fn compare(
         asserted,
         to_string(other),
       ))
+  }
+}
+
+/// An assertion that passes if the subject passes all the provided assertions.
+/// Just like the logical and it shourt circuits whenever a failing assertion
+/// is found.
+///
+/// ## Examples
+///
+/// ```gleam
+/// > 1 |> pass_all([
+/// >   be_equal(to: 1),
+/// >   differ(from: 2),
+/// >   be_greater(than: 0),
+/// > ])
+/// // This assertion passes.
+/// ```
+///
+/// ```gleam
+/// > 1 |> pass_all([
+/// >   be_equal(to: 1),
+/// >   differ(from: 1),
+/// >   be_greater(than: 0),
+/// > ])
+/// // This assertion fails since `differ(1, from: 1)` fails.
+/// ```
+///
+pub fn pass_all(subject: a, assertions: List(fn(a) -> Assertion)) -> Assertion {
+  case assertions {
+    [] -> assertion.pass()
+    [assertion_on, ..rest] -> {
+      let assertion = assertion_on(subject)
+      case assertion.has_failed(assertion) {
+        True -> assertion
+        False -> pass_all(subject, rest)
+      }
+    }
+  }
+}
+
+/// An assertion that passes if the subject passes at least one of the provided assertions.
+/// Just like the logical or, it shourt circuits whenever a passing assertion
+/// is found.
+///
+/// ## Examples
+///
+/// ```gleam
+/// > 1 |> pass_any([
+/// >   be_equal(to: 1),
+/// >   differ(from: 1),
+/// > ])
+/// // This assertion passes because `1 |> be_equal(to: 1)` passes.
+/// ```
+///
+/// ```gleam
+/// > 1 |> pass_any([
+/// >   differ(from: 1),
+/// >   be_greater(than: 0),
+/// > ])
+/// // This assertion fails since all the assertions fail.
+/// ```
+///
+pub fn pass_any(subject: a, assertions: List(fn(a) -> Assertion)) -> Assertion {
+  case assertions {
+    [] -> assertion.pass()
+    [assertion_on] -> assertion_on(subject)
+    [assertion_on, ..rest] -> {
+      let assertion = assertion_on(subject)
+      case assertion.has_failed(assertion) {
+        True -> pass_any(subject, rest)
+        False -> assertion.pass()
+      }
+    }
   }
 }
