@@ -24,17 +24,17 @@ import gleam/int
 ///
 /// ["a", "b", "c"]
 /// |> list.length
-/// |> equal(3)
+/// |> be_equal(to: 3)
 /// // This assertion passes.
 /// ```
 ///
 /// ```gleam
 /// Ok(1)
-/// |> equal(Error("a"))
+/// |> be_equal(to: Error("a"))
 /// // This assertion fails.
 /// ```
 ///
-pub fn equal(actual: a, expected: a) -> Assertion {
+pub fn be_equal(value: a, to expected: a) -> Assertion {
   // TODO: for now in case of equality failure the only reason is `Equality`
   // At the end it will just show the two strings side by side (maybe even
   // with sime kind of super simple diff).
@@ -50,11 +50,11 @@ pub fn equal(actual: a, expected: a) -> Assertion {
   //   inspect its type with `inspect` and use the appropriate reason based
   //   on that defaulting to the `Equality` reason for anything that does
   //   not require nothing more than a simple diff.
-  case actual == expected {
+  case value == expected {
     True -> assertion.pass()
     False ->
       assertion.fail_with_reason(assertion.EqualityAssertionFailed(
-        actual: string.inspect(actual),
+        actual: string.inspect(value),
         expected: string.inspect(expected),
       ))
   }
@@ -69,22 +69,22 @@ pub fn equal(actual: a, expected: a) -> Assertion {
 ///
 /// ["a", "b", "c"]
 /// |> list.length
-/// |> not_equal(2)
+/// |> differ(from: 2)
 /// // This assertion passes.
 /// ```
 ///
 /// ```gleam
 /// Ok(1)
-/// |> not_equal(Ok(1))
+/// |> differ(from: Ok(1))
 /// // This assertion fails.
 /// ```
 ///
-pub fn not_equal(one: a, other: a) -> Assertion {
-  case one != other {
+pub fn differ(value: a, from other: a) -> Assertion {
+  case value != other {
     True -> assertion.pass()
     False ->
       assertion.fail_with_reason(assertion.AssertionFailed(
-        string.inspect(one),
+        string.inspect(value),
         "should not equal",
         string.inspect(other),
       ))

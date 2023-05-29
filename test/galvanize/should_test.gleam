@@ -4,19 +4,19 @@ import gleeunit/should as glee_should
 
 pub fn should_equal_test() {
   1
-  |> should.equal(1)
+  |> should.be_equal(1)
   |> should_pass
 
   [1, 2, 3]
-  |> should.equal([1, 2, 3])
+  |> should.be_equal([1, 2, 3])
   |> should_pass
 
   1
-  |> should.equal(2)
+  |> should.be_equal(2)
   |> should_fail
 
   [1, 2, 3]
-  |> should.equal([3, 2, 1])
+  |> should.be_equal([3, 2, 1])
   |> should_fail
 }
 
@@ -32,21 +32,21 @@ fn should_pass(assertion: Assertion) {
   |> glee_should.be_ok
 }
 
-pub fn should_not_equal_test() {
+pub fn should_differ_test() {
   1
-  |> should.not_equal(2)
+  |> should.differ(from: 2)
   |> should_pass
 
   1
-  |> should.not_equal(1)
+  |> should.differ(from: 1)
   |> should_fail
 
   [1, 2, 3]
-  |> should.not_equal([3, 2, 1])
+  |> should.differ(from: [3, 2, 1])
   |> should_pass
 
   [1, 2, 3]
-  |> should.not_equal([1, 2, 3])
+  |> should.differ(from: [1, 2, 3])
   |> should_fail
 }
 
