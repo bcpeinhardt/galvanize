@@ -2,12 +2,16 @@ import gleam/otp/task.{Exit, Timeout}
 import gleam/io
 import gleam/list
 import colours
+import galvanize/assertion.{Assertion, Fail, Pass, reason_to_string}
+
+const passing_colour = colours.fgpalegreen4
+const failing_colour = colours.fgred3 
 
 /// A test is just a name and a function that takes no parameters and returns Nil
 /// The test passes if the function executes without panicking
 /// The test fails if the function panics
 pub type Test =
-  #(String, fn() -> Nil)
+  #(String, fn() -> Assertion)
 
 /// A test suite has a name and a list of tests
 pub type TestSuite =
@@ -21,28 +25,38 @@ pub type TestOutcome {
 }
 
 /// Convenience function for creating a test with use syntax
-pub fn test(name: String, test_func: fn() -> Nil) -> Test {
+pub fn test(name: String, test_func: fn() -> Assertion) -> Test {
   #(name, test_func)
 }
 
 /// Run a test by sending it to execute in a separate task
-pub fn run_test(test: Test) {
+fn run_test(test: Test) {
   let #(name, func) = test
   case
     task.async(func)
     |> task.try_await(60)
   {
-    Ok(_) ->
-      name <> " passed"
-      |> colours.fgdarkgreen
-      |> io.println
+    Ok(ass) -> {
+      case ass {
+        Pass -> {
+          "Test: " <> name <> " passed"
+          |> passing_colour |> colours.italic
+          |> io.println
+        }
+        Fail(reason) -> {
+          "Test: " <> name <> " failed: " <> reason_to_string(reason)
+          |> failing_colour |> colours.italic
+          |> io.println
+        }
+      }
+    }
     Error(Timeout) ->
-      name <> " timed out"
-      |> colours.fgdarkred1
+      "Test: " <> name <> " timed out!"
+      |> failing_colour |> colours.italic
       |> io.println
     Error(Exit(_)) ->
-      name <> " failed"
-      |> colours.fgdarkred1
+      "Test: " <> name <> " failed!"
+      |> failing_colour |> colours.italic
       |> io.println
   }
 }
@@ -51,7 +65,7 @@ pub fn run_test(test: Test) {
 pub fn run_seq(test_suite: TestSuite) {
   let #(name, tests) = test_suite
   "Running Test Suite: " <> name
-  |> colours.fgdarkgreen
+  |> passing_colour
   |> io.println
   {
     use tst <- list.each(tests)

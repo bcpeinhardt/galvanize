@@ -1,6 +1,6 @@
 /// Describes the result of a single test's comparison.
 ///
-pub opaque type Assertion {
+pub type Assertion {
   Pass
   Fail(Reason)
 }
@@ -11,6 +11,16 @@ pub type Reason {
   EqualityAssertionFailed(expected: String, actual: String)
   AssertionFailed(subject: String, asserted: String, object: String)
   GenericFailure(reason: String)
+}
+
+pub fn reason_to_string(reason: Reason) -> String {
+  case reason {
+    EqualityAssertionFailed(expected, actual) ->
+      "Expected: " <> expected <> ", Found: " <> actual
+    AssertionFailed(subject, asserted, object) ->
+      subject <> " " <> asserted <> " " <> object
+    GenericFailure(reason) -> reason
+  }
 }
 
 /// Turns an assertion into a `Result`.
